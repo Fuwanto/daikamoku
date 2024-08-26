@@ -1,12 +1,10 @@
 from rest_framework.test import APITestCase
-
 from rest_framework import status
 from django.urls import reverse
-from django.core import mail
-from django.utils.http import urlsafe_base64_encode
-from rest_framework_simplejwt.tokens import RefreshToken
 from ..models import User
-import jwt
+from rest_framework_simplejwt.tokens import RefreshToken
+from ..utils import generate_confirmation_token
+from django.utils.http import urlsafe_base64_encode
 
 
 class UserRegistrationTest(APITestCase):
@@ -38,8 +36,9 @@ class UserRegistrationTest(APITestCase):
             "email": "invalid-email",
             "username": "testuser",
             "password": "password123",
+            "confirm_password": "password123",
         }
-        response = self.client.post(url, data)
+        response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("email", response.data)
 
@@ -49,8 +48,9 @@ class UserRegistrationTest(APITestCase):
             "email": "testuser@example.com",
             "username": "testuser",
             "password": "short",
+            "confirm_password": "short",
         }
-        response = self.client.post(url, data)
+        response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("password", response.data)
 
@@ -63,8 +63,9 @@ class UserRegistrationTest(APITestCase):
             "email": "testuser@example.com",
             "username": "testuser2",
             "password": "password123",
+            "confirm_password": "password123",
         }
-        response = self.client.post(url, data)
+        response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("email", response.data)
 
@@ -77,8 +78,9 @@ class UserRegistrationTest(APITestCase):
             "email": "testuser2@example.com",
             "username": "testuser",
             "password": "password123",
+            "confirm_password": "password123",
         }
-        response = self.client.post(url, data)
+        response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("username", response.data)
 
@@ -88,8 +90,9 @@ class UserRegistrationTest(APITestCase):
             "email": "testuser@example.com",
             "username": "a" * 151,
             "password": "password123",
+            "confirm_password": "password123",
         }
-        response = self.client.post(url, data)
+        response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("username", response.data)
 
@@ -110,7 +113,7 @@ class UserLoginTest(APITestCase):
             "email": "testuser@example.com",
             "password": "password123",
         }
-        response = self.client.post(url, data)
+        response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("access", response.data)
         self.assertIn("refresh", response.data)
@@ -121,11 +124,10 @@ class UserLoginTest(APITestCase):
             "email": "wronguser@example.com",
             "password": "wrongpassword",
         }
-        response = self.client.post(url, data)
+        response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertIn("error", response.data)
         self.assertEqual(
-            response.data["error"], "Invalid credentials or inactive account"
+            response.data["detail"], "Invalid credentials or inactive account"
         )
 
 
@@ -148,13 +150,13 @@ class UserLogoutTest(APITestCase):
         data = {
             "refresh": str(self.refresh_token),
         }
-        response = self.client.post(url, data)
+        response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_205_RESET_CONTENT)
         self.assertEqual(response.data["detail"], "Logout successful")
 
     def test_logout_without_refresh_token(self):
         url = reverse("logout")
-        response = self.client.post(url, {})
+        response = self.client.post(url, {}, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data["detail"], "Refresh token not provided")
 
@@ -164,7 +166,7 @@ class UserLogoutTest(APITestCase):
         data = {
             "refresh": invalid_refresh_token,
         }
-        response = self.client.post(url, data)
+        response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("detail", response.data)
 
@@ -174,19 +176,12 @@ class UserLogoutTest(APITestCase):
         data = {
             "refresh": str(self.refresh_token),
         }
-        response = self.client.post(url, data)
+        response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-import jwt
-from django.conf import settings
-
-
-def generate_confirmation_token(user):
-    return jwt.encode({"user_id": user.pk}, settings.SECRET_KEY, algorithm="HS256")
-
-
 class EmailConfirmationTest(APITestCase):
+
     def setUp(self):
         self.email = "testuser@example.com"
         self.password = "testpassword"
@@ -197,14 +192,13 @@ class EmailConfirmationTest(APITestCase):
         self.user.is_active = False
         self.user.save()
 
-        # Genera el token para la confirmación
         self.token = generate_confirmation_token(self.user)
         self.uidb64 = urlsafe_base64_encode(str(self.user.pk).encode())
 
     def test_confirm_email(self):
-        token = generate_confirmation_token(self.user)
-        uidb64 = urlsafe_base64_encode(str(self.user.pk).encode())
-        url = reverse("confirm-email", kwargs={"uidb64": uidb64, "token": token})
+        url = reverse(
+            "confirm-email", kwargs={"uidb64": self.uidb64, "token": self.token}
+        )
         response = self.client.get(url)
         self.user.refresh_from_db()
         self.assertTrue(self.user.is_active)
@@ -212,9 +206,8 @@ class EmailConfirmationTest(APITestCase):
 
     def test_invalid_confirmation_link(self):
         invalid_uidb64 = urlsafe_base64_encode(b"invalid")
-        token = generate_confirmation_token(self.user)
         url = reverse(
-            "confirm-email", kwargs={"uidb64": invalid_uidb64, "token": token}
+            "confirm-email", kwargs={"uidb64": invalid_uidb64, "token": self.token}
         )
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

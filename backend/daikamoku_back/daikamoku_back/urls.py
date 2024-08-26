@@ -1,10 +1,10 @@
 from django.contrib import admin
 from django.urls import path
-from daikamoku_app.views.user_views import (
+from daikamoku_app.views.auth_views import (
     RegisterView,
+    ConfirmEmailView,
     LoginView,
     LogoutView,
-    ConfirmEmailView,
 )
 
 

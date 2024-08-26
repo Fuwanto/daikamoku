@@ -3,7 +3,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils.http import urlsafe_base64_decode
-from ..serializers.user_serializer import RegisterSerializer
+from ..serializers.user_serializer import RegisterSerializer, LoginSerializer
 from ..services import (
     get_user_by_id,
     validate_jwt_token,
@@ -57,6 +57,7 @@ class ConfirmEmailView(generics.GenericAPIView):
 
 class LoginView(generics.GenericAPIView):
     permission_classes = (AllowAny,)
+    serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
         email = request.data.get("email")

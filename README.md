@@ -1,1 +1,2 @@
-test commit
+Applicación de seguimiento de progreso universitario.
+En desarrollo...

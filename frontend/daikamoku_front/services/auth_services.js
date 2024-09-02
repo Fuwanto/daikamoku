@@ -1,7 +1,7 @@
 /*import axios from "axios";
 import * as Keychain from "react-native-keychain";
 
-const BASE_URL = "https://21sk4bj1-8000.brs.devtunnels.ms";
+const BASE_URL = "";
 
 const apiService = axios.create({
   baseURL: BASE_URL,
@@ -107,7 +107,7 @@ export async function logout_api() {
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const BASE_URL = "https://21sk4bj1-8000.brs.devtunnels.ms";
+const BASE_URL = "";
 
 const apiService = axios.create({
   baseURL: BASE_URL,

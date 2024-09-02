@@ -6,9 +6,7 @@ export default function Layout() {
     <SafeAreaProvider>
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: "#f8f8f8" },
-          headerTintColor: "#333",
-          headerTitleStyle: { fontWeight: "bold" },
+          headerShown: false,
         }}
       />
     </SafeAreaProvider>

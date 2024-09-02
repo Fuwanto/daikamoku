@@ -1,7 +1,8 @@
+from django.http import JsonResponse
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from django.utils.http import urlsafe_base64_decode
 from ..serializers.user_serializer import RegisterSerializer, LoginSerializer
 from ..services import (
@@ -19,7 +20,7 @@ class RegisterView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         user = serializer.save()
-        send_confirmation_email(user)
+        # send_confirmation_email(user) just for development
 
 
 class ConfirmEmailView(generics.GenericAPIView):
@@ -65,36 +66,49 @@ class LoginView(generics.GenericAPIView):
         user = get_user_by_email(email)
 
         if user and user.check_password(password) and user.is_active:
-            refresh = RefreshToken.for_user(user)
-            return Response(
+            access_token = AccessToken.for_user(user)
+            response = Response(
                 {
-                    "refresh": str(refresh),
-                    "access": str(refresh.access_token),
+                    "detail": "Login successful",
+                    "access": str(access_token),
                 }
             )
+            return response
+
         return error_response(
             "Invalid credentials or inactive account",
             status_code=status.HTTP_401_UNAUTHORIZED,
         )
 
 
+class RefreshTokenView(generics.GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        auth_header = request.headers.get("Authorization")
+        if not auth_header:
+            return Response(
+                {"detail": "No access token found"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        try:
+            token = auth_header.split(" ")[1]
+            access_token = AccessToken(token)
+            new_access_token = str(access_token)
+
+            return Response(
+                {
+                    "access": new_access_token,
+                }
+            )
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_401_UNAUTHORIZED)
+
+
 class LogoutView(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
-        try:
-            refresh_token = request.data.get("refresh")
-            if refresh_token:
-                token = RefreshToken(refresh_token)
-                token.blacklist()
-                return Response(
-                    {"detail": "Logout successful"},
-                    status=status.HTTP_205_RESET_CONTENT,
-                )
-            else:
-                return error_response(
-                    "Refresh token not provided",
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                )
-        except Exception as e:
-            return error_response(str(e), status_code=status.HTTP_400_BAD_REQUEST)
+        response = Response({"detail": "Logout successful"})
+        return response

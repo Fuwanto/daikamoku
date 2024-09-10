@@ -1,25 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, ActivityIndicator } from "react-native";
+import React, { useContext } from "react";
+import { View, ActivityIndicator } from "react-native";
 import NoLogin from "../components/noLogin";
-import { isAuthenticated } from "../services/auth_services";
-import Start from "../components/Start";
+import { AuthContext } from "../context/AuthContext";
+import Start from "./Start";
 
-export default function Home() {
-  const [authenticated, setAuthenticated] = useState(null);
-
-  useEffect(() => {
-    async function checkAuth() {
-      try {
-        const result = await isAuthenticated();
-        setAuthenticated(result);
-      } catch (error) {
-        console.error("Error checking authentication:", error);
-        setAuthenticated(false);
-      }
-    }
-
-    checkAuth();
-  }, []);
+export default function Index() {
+  const { authenticated } = useContext(AuthContext);
 
   if (authenticated === null) {
     return (

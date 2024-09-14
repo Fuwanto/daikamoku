@@ -26,7 +26,7 @@ export default function RegisterScreen({ navigation }) {
         "Success",
         "Registration successful! Please check your email to confirm your account."
       );
-      navigation.navigate("Login");
+      navigation.navigate("login");
     } else {
       setError("Registration failed. Please try again.");
     }

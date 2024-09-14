@@ -107,7 +107,7 @@ export async function logout_api() {
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const BASE_URL = "https://21sk4bj1-8000.brs.devtunnels.ms";
+const BASE_URL = "";
 
 const apiService = axios.create({
   baseURL: BASE_URL,
@@ -163,12 +163,17 @@ export async function isAuthenticated() {
   }
 }
 
-export async function register_api(email, password, confirmPassword, username) {
+export async function register_api(
+  email,
+  password,
+  confirm_password,
+  username
+) {
   try {
     const response = await apiService.post("/register/", {
       email,
       password,
-      confirmPassword,
+      confirm_password,
       username,
     });
     if (response.status === 201) {

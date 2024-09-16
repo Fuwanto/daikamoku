@@ -107,7 +107,7 @@ export async function logout_api() {
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const BASE_URL = "";
+const BASE_URL = "https://wthdj5mh-8000.brs.devtunnels.ms";
 
 const apiService = axios.create({
   baseURL: BASE_URL,
@@ -176,15 +176,15 @@ export async function register_api(
       confirm_password,
       username,
     });
+
     if (response.status === 201) {
-      return true;
+      return { success: true };
     }
   } catch (error) {
-    console.error(
-      "Registration failed:",
-      error.response?.data || error.message
-    );
-    return false;
+    if (error.response?.data) {
+      return { success: false, errors: error.response.data };
+    }
+    return { success: false, errors: { general: error.message } };
   }
 }
 

@@ -9,7 +9,6 @@ from .career_subject import CareerSubject
 from .career_progress import CareerProgress
 from .duration_type import DurationType
 from .friendship import Friendship, FriendshipRequest
-from .email_verification import EmailVerification
 
 __all__ = [
     "Faculty",
@@ -24,5 +23,4 @@ __all__ = [
     "DurationType",
     "Friendship",
     "FriendshipRequest",
-    "EmailVerification",
 ]

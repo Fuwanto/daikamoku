@@ -29,8 +29,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             username=validated_data["username"],
             password=password,
         )
-        # Ensure the user is not active until email is confirmed
-        user.is_active = False
+        # user.is_active = False # just for development purposes
         user.save()
         return user
 

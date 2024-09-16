@@ -29,4 +29,5 @@ def validate_jwt_token(token):
 
 def activate_user(user):
     user.is_active = True
+    user.email_confirmed = True
     user.save()

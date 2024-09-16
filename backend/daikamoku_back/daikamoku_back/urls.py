@@ -5,6 +5,7 @@ from daikamoku_app.views.auth_views import (
     ConfirmEmailView,
     LoginView,
     LogoutView,
+    RefreshTokenView,
 )
 
 
@@ -18,4 +19,5 @@ urlpatterns = [
         ConfirmEmailView.as_view(),
         name="confirm-email",
     ),
+    path("refresh-token/", RefreshTokenView.as_view(), name="refresh-token"),
 ]

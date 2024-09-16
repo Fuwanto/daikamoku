@@ -1,10 +1,12 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
 from django.urls import reverse
-from ..models import User
+from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 from ..utils import generate_confirmation_token
 from django.utils.http import urlsafe_base64_encode
+
+User = get_user_model()
 
 
 class UserRegistrationTest(APITestCase):
@@ -21,9 +23,7 @@ class UserRegistrationTest(APITestCase):
             "confirm_password": "password123",
         }
         response = self.client.post(url, data, format="json")
-
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
         expected_keys = {"id", "email", "username"}
         self.assertTrue(
             all(key in response.data for key in expected_keys),
@@ -116,7 +116,6 @@ class UserLoginTest(APITestCase):
         response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("access", response.data)
-        self.assertIn("refresh", response.data)
 
     def test_login_with_invalid_credentials(self):
         url = reverse("login")
@@ -147,36 +146,14 @@ class UserLogoutTest(APITestCase):
 
     def test_user_can_logout(self):
         url = reverse("logout")
-        data = {
-            "refresh": str(self.refresh_token),
-        }
-        response = self.client.post(url, data, format="json")
-        self.assertEqual(response.status_code, status.HTTP_205_RESET_CONTENT)
-        self.assertEqual(response.data["detail"], "Logout successful")
-
-    def test_logout_without_refresh_token(self):
-        url = reverse("logout")
         response = self.client.post(url, {}, format="json")
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data["detail"], "Refresh token not provided")
-
-    def test_logout_with_invalid_refresh_token(self):
-        url = reverse("logout")
-        invalid_refresh_token = "invalid_token"
-        data = {
-            "refresh": invalid_refresh_token,
-        }
-        response = self.client.post(url, data, format="json")
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("detail", response.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["detail"], "Logout successful")
 
     def test_logout_without_authentication(self):
         self.client.credentials()
         url = reverse("logout")
-        data = {
-            "refresh": str(self.refresh_token),
-        }
-        response = self.client.post(url, data, format="json")
+        response = self.client.post(url, {}, format="json")
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 

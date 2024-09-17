@@ -107,7 +107,7 @@ export async function logout_api() {
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const BASE_URL = "https://wthdj5mh-8000.brs.devtunnels.ms";
+const BASE_URL = "";
 
 const apiService = axios.create({
   baseURL: BASE_URL,
@@ -202,8 +202,10 @@ export async function login_api(email, password) {
       return true;
     }
   } catch (error) {
-    console.error("Login failed:", error.response?.data || error.message);
-    return false;
+    if (error.response?.data) {
+      return { success: false, errors: error.response.data };
+    }
+    return { success: false, errors: { general: error.message } };
   }
 }
 
@@ -222,7 +224,9 @@ export async function logout_api() {
       }
     }
   } catch (error) {
-    console.error("Logout failed:", error.response?.data || error.message);
-    return false;
+    if (error.response?.data) {
+      return { success: false, errors: error.response.data };
+    }
+    return { success: false, errors: { general: error.message } };
   }
 }

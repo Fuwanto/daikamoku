@@ -1,5 +1,27 @@
-import { login_api, register_api } from "./auth_services";
+import { login_api, register_api } from "./authServices";
 import { Alert } from "react-native";
+
+const validateEmail = (email) => {
+  if (!email.trim()) {
+    return "El Email no puede estar vacío.";
+  }
+  if (!/\S+@\S+\.\S+/.test(email)) {
+    return "El Email no es válido.";
+  }
+  return "";
+};
+
+const validatePassword = (password) => {
+  if (!password.trim()) {
+    return "La Contraseña no puede estar vacía.";
+  }
+  return "";
+};
+
+const handleErrors = (errors, setFieldErrors) => {
+  setFieldErrors(errors);
+  return Object.values(errors).some((error) => error !== "");
+};
 
 export const handleLogin = async (
   email,
@@ -9,25 +31,11 @@ export const handleLogin = async (
   navigation
 ) => {
   const errors = {
-    email: "",
-    password: "",
+    email: validateEmail(email),
+    password: validatePassword(password),
   };
 
-  if (!email.trim()) {
-    errors.email = "El Email no puede estar vacío.";
-  } else if (!/\S+@\S+\.\S+/.test(email)) {
-    errors.email = "El Email no es válido.";
-  }
-
-  if (!password.trim()) {
-    errors.password = "La Contraseña no puede estar vacía.";
-  }
-
-  setFieldErrors(errors);
-
-  if (Object.values(errors).some((error) => error !== "")) {
-    return;
-  }
+  if (handleErrors(errors, setFieldErrors)) return;
 
   const result = await login_api(email, password);
 
@@ -49,41 +57,19 @@ export const handleRegister = async (
   navigation
 ) => {
   const errors = {
-    email: "",
-    username: "",
-    password: "",
-    confirmPassword: "",
+    email: validateEmail(email),
+    username: !username.trim() ? "El Usuario no puede estar vacío." : "",
+    password: validatePassword(password),
+    confirmPassword: !confirmPassword.trim()
+      ? "La Confirmación de la Contraseña no puede estar vacía."
+      : "",
   };
 
-  if (!email.trim()) {
-    errors.email = "El Email no puede estar vacío.";
-  } else if (!/\S+@\S+\.\S+/.test(email)) {
-    errors.email = "El Email no es válido.";
-  }
-
-  if (!username.trim()) {
-    errors.username = "El Usuario no puede estar vacío.";
-  }
-
-  if (!password.trim()) {
-    errors.password = "La Contraseña no puede estar vacía.";
-  }
-
-  if (!confirmPassword.trim()) {
-    errors.confirmPassword =
-      "La Confirmación de la Contraseña no puede estar vacía.";
-  }
-
   if (password !== confirmPassword) {
-    errors.password = "Las contraseñas no coinciden.";
-    errors.confirmPassword = "Las contraseñas no coinciden.";
+    errors.password = errors.confirmPassword = "Las contraseñas no coinciden.";
   }
 
-  setFieldErrors(errors);
-
-  if (Object.values(errors).some((error) => error !== "")) {
-    return;
-  }
+  if (handleErrors(errors, setFieldErrors)) return;
 
   const result = await register_api(email, password, confirmPassword, username);
 

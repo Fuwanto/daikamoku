@@ -1,5 +1,5 @@
 import { Text, View, Alert, Button } from "react-native";
-import { logout_api } from "../services/auth_services";
+import { logout_api } from "../services/authServices";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 

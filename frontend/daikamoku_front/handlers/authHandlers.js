@@ -1,69 +1,43 @@
 import { login_api, register_api } from "../services/authServices";
 import { Alert } from "react-native";
-import { validateEmail, validatePassword } from "../validators/authValidators";
-
-export const handleErrors = (errors, setFieldErrors) => {
-  setFieldErrors(errors);
-  return Object.values(errors).some((error) => error !== "");
-};
 
 export const handleLogin = async (
-  email,
-  password,
+  data, // Los datos ya vienen procesados de react-hook-form
   setAuthenticated,
-  setFieldErrors,
+  setError,
   navigation
 ) => {
-  const errors = {
-    email: validateEmail(email),
-    password: validatePassword(password),
-  };
-
-  if (handleErrors(errors, setFieldErrors)) return;
-
+  const { email, password } = data;
   const result = await login_api(email, password);
-  console.log("Login Result:", result);
 
   if (result.success) {
     setAuthenticated(true);
     navigation.navigate("index");
   } else {
-    setFieldErrors(result.errors);
+    Object.keys(result.errors).forEach((key) => {
+      setError(key, { type: "manual", message: result.errors[key] });
+    });
   }
 };
 
 export const handleRegister = async (
-  email,
-  username,
-  password,
-  confirmPassword,
-  setFieldErrors,
+  data, // Los datos ya vienen procesados de react-hook-form
+  setError, // Método para establecer errores manualmente
   navigation
 ) => {
-  const errors = {
-    email: validateEmail(email),
-    username: !username.trim() ? "El Usuario no puede estar vacío." : "",
-    password: validatePassword(password),
-    confirmPassword: !confirmPassword.trim()
-      ? "La Confirmación de la Contraseña no puede estar vacía."
-      : "",
-  };
-
-  if (password !== confirmPassword) {
-    errors.password = errors.confirmPassword = "Las contraseñas no coinciden.";
-  }
-
-  if (handleErrors(errors, setFieldErrors)) return;
+  const { email, username, password, confirmPassword } = data;
 
   const result = await register_api(email, password, confirmPassword, username);
 
   if (result.success) {
     Alert.alert(
       "Success",
-      "Registration successful! Please check your email to confirm your account."
+      "Registro exitoso. Revisa tu correo para confirmar tu cuenta."
     );
     navigation.navigate("login");
   } else {
-    setFieldErrors(result.errors);
+    Object.keys(result.errors).forEach((field) => {
+      setError(field, { type: "manual", message: result.errors[field] });
+    });
   }
 };

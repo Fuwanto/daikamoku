@@ -1,49 +1,63 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, Image } from "react-native";
+import { useForm } from "react-hook-form";
 import { handleRegister } from "../handlers/authHandlers";
 import Form from "../components/Form";
 
 export default function RegisterScreen({ navigation }) {
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [fieldErrors, setFieldErrors] = useState({});
+  // Uso de react-hook-form
+  const {
+    control,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm();
 
   const fields = [
     {
       name: "email",
       label: "Email",
-      value: email,
-      onChange: setEmail,
       placeholder: "Email",
       isPassword: false,
+      validation: {
+        required: "El Email es obligatorio.",
+        pattern: {
+          value: /\S+@\S+\.\S+/,
+          message: "El formato del Email no es válido.",
+        },
+      },
     },
     {
       name: "username",
       label: "Usuario",
-      value: username,
-      onChange: setUsername,
       placeholder: "Username",
       isPassword: false,
+      validation: { required: "El Usuario es obligatorio." },
     },
     {
       name: "password",
       label: "Contraseña",
-      value: password,
-      onChange: setPassword,
       placeholder: "Password",
       isPassword: true,
+      validation: { required: "La Contraseña es obligatoria." },
     },
     {
       name: "confirmPassword",
       label: "Confirme la contraseña",
-      value: confirmPassword,
-      onChange: setConfirmPassword,
       placeholder: "Confirm Password",
       isPassword: true,
+      validation: {
+        required: "Confirma tu contraseña.",
+        validate: (value, { password }) =>
+          value === password || "Las contraseñas no coinciden.",
+      },
     },
   ];
+
+  // Función para manejar el registro
+  const onSubmit = async (data) => {
+    handleRegister(data, setError, navigation);
+  };
 
   return (
     <View className="flex-1 flex-col bg-black">
@@ -59,18 +73,10 @@ export default function RegisterScreen({ navigation }) {
 
       <Form
         fields={fields}
-        onSubmit={() =>
-          handleRegister(
-            email,
-            username,
-            password,
-            confirmPassword,
-            setFieldErrors,
-            navigation
-          )
-        }
+        onSubmit={handleSubmit(onSubmit)} // Pasamos handleSubmit de react-hook-form
+        control={control} // Pasamos el control para cada campo
+        errors={errors} // Pasamos los errores para cada campo
         buttonText="Registrarse"
-        fieldErrors={fieldErrors}
       />
     </View>
   );

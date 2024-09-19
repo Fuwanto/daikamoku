@@ -1,33 +1,50 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import { View, Text, Image } from "react-native";
 import { AuthContext } from "../context/AuthContext";
-import { handleLogin } from "../handlers/authHandlers";
+import { useForm } from "react-hook-form";
 import Form from "../components/Form";
+import { handleLogin } from "../handlers/authHandlers";
 
 export default function LoginScreen({ navigation }) {
   const { setAuthenticated } = useContext(AuthContext);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [fieldErrors, setFieldErrors] = useState({});
+
+  // Uso de react-hook-form
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    setError,
+  } = useForm();
 
   const fields = [
     {
       name: "email",
       label: "Email",
-      value: email,
-      onChange: setEmail,
       placeholder: "Email",
       isPassword: false,
+      validation: {
+        required: "El Email no puede estar vacío.",
+        pattern: {
+          value: /\S+@\S+\.\S+/,
+          message: "El Email no es válido.",
+        },
+      },
     },
     {
       name: "password",
       label: "Contraseña",
-      value: password,
-      onChange: setPassword,
       placeholder: "Password",
       isPassword: true,
+      validation: {
+        required: "La Contraseña no puede estar vacía.",
+      },
     },
   ];
+
+  // Función para manejar el login
+  const onSubmit = (data) => {
+    handleLogin(data, setAuthenticated, setError, navigation);
+  };
 
   return (
     <View className="flex-1 flex-col bg-black">
@@ -40,17 +57,10 @@ export default function LoginScreen({ navigation }) {
 
       <Form
         fields={fields}
-        onSubmit={() =>
-          handleLogin(
-            email,
-            password,
-            setAuthenticated,
-            setFieldErrors,
-            navigation
-          )
-        }
+        onSubmit={handleSubmit(onSubmit)}
+        control={control}
+        errors={errors}
         buttonText="Login"
-        fieldErrors={fieldErrors}
       />
     </View>
   );

@@ -1,7 +1,14 @@
 import React from "react";
 import { View, Text, TextInput, Pressable } from "react-native";
+import { Controller } from "react-hook-form";
 
-export default function Form({ fields, onSubmit, buttonText, fieldErrors }) {
+export default function Form({
+  fields,
+  onSubmit,
+  control,
+  errors,
+  buttonText,
+}) {
   return (
     <View className="flex-auto items-center bg-white rounded-3xl p-4">
       {fields.map((field, index) => (
@@ -9,28 +16,44 @@ export default function Form({ fields, onSubmit, buttonText, fieldErrors }) {
           <Text className="text-base text-neutral-700 text-left p-2">
             {field.label}
           </Text>
-          <TextInput
-            className={`font-bold rounded-2xl p-2 bg-slate-100 ${
-              fieldErrors[field.name] ? "border-red-500 border-2" : ""
-            }`}
-            placeholder={field.placeholder}
-            value={field.value}
-            onChangeText={field.onChange}
-            secureTextEntry={field.isPassword}
-            keyboardType={field.label === "Email" ? "email-address" : "default"}
-            autoCapitalize="none"
-            placeholderTextColor="#A9A9A9"
+
+          <Controller
+            control={control}
+            name={field.name}
+            rules={field.validation}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                className={`font-bold rounded-2xl p-2 bg-slate-100 ${
+                  errors[field.name] ? "border-red-500 border-2" : ""
+                }`}
+                placeholder={field.placeholder}
+                value={value}
+                onChangeText={onChange}
+                secureTextEntry={field.isPassword}
+                keyboardType={
+                  field.label === "Email" ? "email-address" : "default"
+                }
+                autoCapitalize="none"
+                placeholderTextColor="#A9A9A9"
+                onBlur={onBlur}
+              />
+            )}
           />
 
-          {fieldErrors[field.name] ? (
+          {/* Mostrar error debajo del campo */}
+          {errors[field.name] ? (
             <Text className="text-red-500 text-sm">
-              {fieldErrors[field.name]}
+              {errors[field.name]?.message || "Error desconocido"}
             </Text>
           ) : null}
         </View>
       ))}
-      {fieldErrors["detail"] ? (
-        <Text className="text-red-500 text-sm">{fieldErrors["detail"]}</Text>
+
+      {/* Errores generales (si existen) */}
+      {errors["detail"] ? (
+        <Text className="text-red-500 text-sm">
+          {errors["detail"]?.message || "Error desconocido"}
+        </Text>
       ) : null}
 
       <Pressable

@@ -1,4 +1,4 @@
-import { login_api, register_api } from "../../services/authServices";
+import { login_api, register_api } from "../services/authServices";
 import { Alert } from "react-native";
 import { validateEmail, validatePassword } from "../validators/authValidators";
 

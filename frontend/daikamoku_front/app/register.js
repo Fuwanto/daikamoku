@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, Image } from "react-native";
-import { handleRegister } from "./handlers/authHandlers";
+import { handleRegister } from "../handlers/authHandlers";
 import Form from "../components/Form";
 
 export default function RegisterScreen({ navigation }) {

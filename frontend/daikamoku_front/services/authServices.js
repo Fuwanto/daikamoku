@@ -199,7 +199,7 @@ export async function login_api(email, password) {
       const { access, refresh } = response.data;
       await storeTokens(access, refresh);
       setAuthToken(access);
-      return true;
+      return { success: true };
     }
   } catch (error) {
     if (error.response?.data) {
@@ -220,7 +220,7 @@ export async function logout_api() {
       });
       if (response.status === 200) {
         await AsyncStorage.removeItem("accessToken");
-        return true;
+        return { success: true };
       }
     }
   } catch (error) {

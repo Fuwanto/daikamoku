@@ -1,24 +1,8 @@
-import { login_api, register_api } from "./authServices";
+import { login_api, register_api } from "../../services/authServices";
 import { Alert } from "react-native";
+import { validateEmail, validatePassword } from "../validators/authValidators";
 
-const validateEmail = (email) => {
-  if (!email.trim()) {
-    return "El Email no puede estar vacío.";
-  }
-  if (!/\S+@\S+\.\S+/.test(email)) {
-    return "El Email no es válido.";
-  }
-  return "";
-};
-
-const validatePassword = (password) => {
-  if (!password.trim()) {
-    return "La Contraseña no puede estar vacía.";
-  }
-  return "";
-};
-
-const handleErrors = (errors, setFieldErrors) => {
+export const handleErrors = (errors, setFieldErrors) => {
   setFieldErrors(errors);
   return Object.values(errors).some((error) => error !== "");
 };
@@ -38,9 +22,9 @@ export const handleLogin = async (
   if (handleErrors(errors, setFieldErrors)) return;
 
   const result = await login_api(email, password);
+  console.log("Login Result:", result);
 
   if (result.success) {
-    Alert.alert("Success", "Login successful!");
     setAuthenticated(true);
     navigation.navigate("index");
   } else {

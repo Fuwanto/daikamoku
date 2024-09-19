@@ -21,6 +21,7 @@ export default function Form({ fields, onSubmit, buttonText, fieldErrors }) {
             autoCapitalize="none"
             placeholderTextColor="#A9A9A9"
           />
+
           {fieldErrors[field.name] ? (
             <Text className="text-red-500 text-sm">
               {fieldErrors[field.name]}

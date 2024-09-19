@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { View, Text, Image } from "react-native";
 import { AuthContext } from "../context/AuthContext";
-import { handleLogin } from "../services/authHandlers";
+import { handleLogin } from "./handlers/authHandlers";
 import Form from "../components/Form";
 
 export default function LoginScreen({ navigation }) {

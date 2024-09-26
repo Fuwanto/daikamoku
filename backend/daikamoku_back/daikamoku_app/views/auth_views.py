@@ -1,13 +1,12 @@
-from django.http import JsonResponse
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
+from rest_framework_simplejwt.tokens import AccessToken
 from django.utils.http import urlsafe_base64_decode
 from ..serializers.user_serializer import RegisterSerializer, LoginSerializer
-from ..services import (
+from ..services.user_services import (
     get_user_by_id,
-    validate_jwt_token,
+    get_user_by_token,
     activate_user,
     get_user_by_email,
 )
@@ -38,8 +37,8 @@ class ConfirmEmailView(generics.GenericAPIView):
         if not user:
             return error_response("User not found.", status=status.HTTP_400_BAD_REQUEST)
 
-        payload = validate_jwt_token(token)
-        if payload and payload.get("user_id") == user.id:
+        user_token = get_user_by_token(token)
+        if user_token and user_token.id == user.id:
             activate_user(user)
             return Response(
                 {"detail": "Email confirmed successfully."},

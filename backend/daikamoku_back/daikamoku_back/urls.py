@@ -7,6 +7,11 @@ from daikamoku_app.views.auth_views import (
     LogoutView,
     RefreshTokenView,
 )
+from daikamoku_app.views.faculty_views import (
+    FacultyView,
+    FacultyCareerView,
+    CareerProgressView,
+)
 
 
 urlpatterns = [
@@ -20,4 +25,11 @@ urlpatterns = [
         name="confirm-email",
     ),
     path("refresh-token/", RefreshTokenView.as_view(), name="refresh-token"),
+    path("faculties/", FacultyView.as_view(), name="faculties"),
+    path(
+        "faculties/<int:faculty_id>/careers/",
+        FacultyCareerView.as_view(),
+        name="faculty-careers",
+    ),
+    path("career-progress/", CareerProgressView.as_view(), name="career-progress"),
 ]

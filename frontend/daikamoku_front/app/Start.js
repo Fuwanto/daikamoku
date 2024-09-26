@@ -1,27 +1,49 @@
-import { Text, View, Alert, Button } from "react-native";
-import { logout_api } from "../services/authServices";
-import { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
+import React, { useState, useEffect } from "react";
+import { Text, View, ActivityIndicator } from "react-native";
+import LogoutButton from "../components/logoutButton";
+import FacultyAndCareerList from "../components/facultyAndCareerList";
+import { getProgress } from "../services/facultyServices";
 
 export default function Start({ navigation }) {
-  const { setAuthenticated } = useContext(AuthContext);
+  const [progress, setProgress] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const handleLogout = async () => {
-    const success = await logout_api();
-    if (success) {
-      setAuthenticated(false);
-      Alert.alert("Success", "Logout successful.");
-    } else {
-      Alert.alert("Error", "Logout failed. Please try again.");
-    }
-  };
+  useEffect(() => {
+    const fetchProgress = async () => {
+      const data = await getProgress();
+      setProgress(data);
+      setLoading(false);
+    };
+
+    fetchProgress();
+  }, []);
+
+  if (loading) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   return (
-    <View>
-      <Text>Welcome to Daikamoku!</Text>
-      <Button title="Logout" onPress={handleLogout} />
+    <View className="flex-1 justify-center items-center p-4 bg-gray-100">
+      <Text className="text-2xl font-bold mb-6 text-gray-800">
+        Welcome to Daikamoku!
+      </Text>
+
+      {progress ? (
+        <Text className="text-lg text-gray-800">Your progress is:</Text>
+      ) : (
+        <>
+          <Text className="text-lg text-gray-800">
+            You have no progress yet.
+          </Text>
+          <FacultyAndCareerList />
+        </>
+      )}
+
+      <LogoutButton />
     </View>
   );
 }
-
-// make logout bottom component

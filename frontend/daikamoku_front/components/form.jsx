@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TextInput, Pressable } from "react-native";
+import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { Controller } from "react-hook-form";
 
 export default function Form({
@@ -56,12 +56,12 @@ export default function Form({
         </Text>
       ) : null}
 
-      <Pressable
+      <TouchableOpacity
         className="bg-custom-blue p-4 rounded-2xl m-4"
         onPress={onSubmit}
       >
         <Text className="text-xl font-bold text-white">{buttonText}</Text>
-      </Pressable>
+      </TouchableOpacity>
     </View>
   );
 }

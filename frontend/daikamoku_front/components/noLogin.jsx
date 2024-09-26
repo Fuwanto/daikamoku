@@ -1,4 +1,4 @@
-import { Pressable, Text, View, Image } from "react-native";
+import { TouchableOpacity, Text, View, Image } from "react-native";
 import { Link } from "expo-router";
 
 export default function NoLogin() {
@@ -16,15 +16,15 @@ export default function NoLogin() {
 
       <View className="flex-auto justify-center items-center bg-black">
         <Link href="/login" asChild>
-          <Pressable className="bg-custom-blue p-4 rounded-2xl m-4">
+          <TouchableOpacity className="bg-custom-blue p-4 rounded-2xl m-4">
             <Text className="text-xl font-bold text-white">Iniciar sesión</Text>
-          </Pressable>
+          </TouchableOpacity>
         </Link>
 
         <Link href="/register" asChild>
-          <Pressable className="bg-custom-brown p-4 rounded-2xl mt-4 ">
+          <TouchableOpacity className="bg-custom-brown p-4 rounded-2xl mt-4 ">
             <Text className="text-xl font-bold">Registrarse</Text>
-          </Pressable>
+          </TouchableOpacity>
         </Link>
       </View>
     </View>

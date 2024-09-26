@@ -3,11 +3,6 @@ from ..models import User
 from django.core.exceptions import ValidationError
 
 
-from rest_framework import serializers
-from ..models import User
-from django.core.exceptions import ValidationError
-
-
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
     confirm_password = serializers.CharField(write_only=True, min_length=8)

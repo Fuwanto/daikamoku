@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, Image } from "react-native";
 import { useForm } from "react-hook-form";
 import { handleRegister } from "../handlers/authHandlers";
-import Form from "../components/Form";
+import Form from "../components/form";
 
 export default function RegisterScreen({ navigation }) {
   // Uso de react-hook-form

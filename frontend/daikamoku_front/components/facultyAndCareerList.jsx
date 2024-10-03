@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from "react";
+import { View, ActivityIndicator } from "react-native";
 import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  ActivityIndicator,
-} from "react-native";
+  getSubjectsByCareer,
+  getStateSubjects,
+  updateCareerProgress,
+} from "../services/progressServices";
 import { getFaculties, getFacultyCareers } from "../services/facultyServices";
+import CareerList from "./careerList";
+import FacultyList from "./facultyList";
+import SubjectProgressList from "./subjectProgressList";
 
-const FacultyAndCareerList = () => {
+export default function FacultyAndCareerList() {
   const [faculties, setFaculties] = useState([]);
   const [careers, setCareers] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+  const [stateSubjects, setStateSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedFacultyId, setSelectedFacultyId] = useState(null);
+  const [selectedCareerId, setSelectedCareerId] = useState(null);
 
   useEffect(() => {
     const fetchFaculties = async () => {
@@ -36,20 +41,33 @@ const FacultyAndCareerList = () => {
     }
   };
 
-  const renderFacultyItem = ({ item }) => (
-    <TouchableOpacity onPress={() => handleFacultyPress(item.id)}>
-      <View className="p-4 my-2 bg-blue-600 rounded-lg shadow-lg">
-        <Text className="text-lg font-bold text-white">{item.name}</Text>
-      </View>
-    </TouchableOpacity>
-  );
+  const handleCareerPress = async (careerId) => {
+    setSelectedCareerId(careerId);
+    setLoading(true);
+    const subjectsData = await getSubjectsByCareer(careerId);
+    const stateSubjectsData = await getStateSubjects();
+    setSubjects(subjectsData.subjects);
+    setStateSubjects(stateSubjectsData.state_subjects);
+    setLoading(false);
+  };
 
-  const renderCareerItem = ({ item }) => (
-    <View className="p-4 my-2 mx-4 bg-green-600 rounded-lg shadow-lg">
-      <Text className="text-lg font-bold text-white">{item.name}</Text>
-      <Text className="text-sm text-gray-200">Plan: {item.plan}</Text>
-    </View>
-  );
+  const handleSubmitProgress = async (selectedSubjects) => {
+    const formattedSubjects = Object.entries(selectedSubjects).map(
+      ([subjectId, stateSubjectId]) => ({
+        subject: subjectId,
+        state_subject: stateSubjectId,
+        career: selectedCareerId,
+      })
+    );
+    const response = await updateCareerProgress({
+      subjects: formattedSubjects,
+    });
+    if (response.success) {
+      alert("Progress updated successfully!");
+    } else {
+      alert("Error updating progress.");
+    }
+  };
 
   if (loading) {
     return (
@@ -61,27 +79,27 @@ const FacultyAndCareerList = () => {
 
   return (
     <View className="flex-1 bg-gray-100">
-      <FlatList
-        data={faculties}
-        renderItem={renderFacultyItem}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle="p-4"
-      />
-      {selectedFacultyId && (
-        <FlatList
-          data={careers}
-          renderItem={renderCareerItem}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle="p-4"
-          ListEmptyComponent={
-            <Text className="text-center text-gray-500">
-              No hay carreras disponibles.
-            </Text>
-          }
+      {/* Listado de Facultades */}
+      {!selectedFacultyId && (
+        <FacultyList
+          faculties={faculties}
+          onFacultyPress={handleFacultyPress}
+        />
+      )}
+
+      {/* Listado de Carreras de la facultad seleccionada */}
+      {selectedFacultyId && !selectedCareerId && (
+        <CareerList careers={careers} onCareerPress={handleCareerPress} />
+      )}
+
+      {/* Listado de Materias y selección de progreso */}
+      {selectedCareerId && (
+        <SubjectProgressList
+          subjects={subjects}
+          stateSubjects={stateSubjects}
+          onSubmitProgress={handleSubmitProgress}
         />
       )}
     </View>
   );
-};
-
-export default FacultyAndCareerList;
+}

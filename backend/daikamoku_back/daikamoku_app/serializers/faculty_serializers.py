@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
-from ..models import Faculty, Career, CareerProgress, CareerSubject, Subject
+from ..models import Faculty, Career, CareerProgress, Subject, StateSubject
 
 
 class FacultySerializer(serializers.ModelSerializer):
@@ -64,28 +64,19 @@ class CareerProgressSerializer(serializers.ModelSerializer):
         return career_progress
 
 
-class CareerSubjectSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CareerSubject
-        fields = "__all__"
+class showCareerProgressSerializer(serializers.Serializer):
+    career = serializers.CharField()
+    subjects = serializers.ListField(child=serializers.DictField())
 
     def validate(self, data):
-        if data["career"] == "":
-            raise ValidationError({"career": "Career cannot be empty."})
-        if data["subject"] == "":
-            raise ValidationError({"subject": "Subject cannot be empty."})
+        if not data.get("career"):
+            raise serializers.ValidationError({"career": "Career cannot be empty."})
+        if not data.get("subjects"):
+            raise serializers.ValidationError({"subjects": "Subjects cannot be empty."})
         return data
 
-    def create(self, validated_data):
-        career_subject = CareerSubject.objects.create(
-            career=validated_data["career"],
-            subject=validated_data["subject"],
-        )
-        career_subject.save()
-        return career_subject
 
-
-class SubjectSerializer(serializers.ModelSerializer):
+class subjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subject
         fields = "__all__"
@@ -96,6 +87,24 @@ class SubjectSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        subject = Subject.objects.create(name=validated_data["name"])
+        subject = Subject.objects.create(
+            name=validated_data["name"], career=validated_data["career"]
+        )
         subject.save()
         return subject
+
+
+class StateSubjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StateSubject
+        fields = "__all__"
+
+    def validate(self, data):
+        if data["name"] == "":
+            raise ValidationError({"name": "Name cannot be empty."})
+        return data
+
+    def create(self, validated_data):
+        state_subject = StateSubject.objects.create(name=validated_data["name"])
+        state_subject.save()
+        return state_subject

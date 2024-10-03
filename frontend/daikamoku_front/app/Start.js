@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Text, View, ActivityIndicator } from "react-native";
 import LogoutButton from "../components/logoutButton";
 import FacultyAndCareerList from "../components/facultyAndCareerList";
+import ProgressDisplay from "../components/progressDisplay";
 import { getProgress } from "../services/facultyServices";
 
 export default function Start({ navigation }) {
@@ -33,7 +34,7 @@ export default function Start({ navigation }) {
       </Text>
 
       {progress ? (
-        <Text className="text-lg text-gray-800">Your progress is:</Text>
+        <ProgressDisplay progress={progress} />
       ) : (
         <>
           <Text className="text-lg text-gray-800">

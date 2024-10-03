@@ -16,6 +16,9 @@ export async function isAuthenticated() {
         await storeToken(response.data.access); // Actualiza los tokens almacenados
         setAuthToken(response.data.access);
         return true;
+      } else {
+        removeToken();
+        return false;
       }
     }
   } catch (error) {

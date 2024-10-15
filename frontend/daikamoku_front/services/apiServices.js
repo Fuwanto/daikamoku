@@ -1,7 +1,9 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+// eslint-disable-next-line import/no-unresolved
+import { API_URL } from "@env";
 
-const BASE_URL = "";
+const BASE_URL = process.env.API_URL;
 
 const apiService = axios.create({
   baseURL: BASE_URL,

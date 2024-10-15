@@ -36,14 +36,18 @@ def get_career_progress(user_id):
 
     for p in progress:
         career_name = get_carrer_by_id(p.career.id).name
-        subject_name = get_subject_by_id(p.subject.id).name
+        subject = get_subject_by_id(p.subject.id)
         state_description = get_state_subject_by_id(p.state_subject.id).description
 
         if career_name not in career_progress:
             career_progress[career_name] = {"career": career_name, "subjects": []}
 
         career_progress[career_name]["subjects"].append(
-            {"subject": subject_name, "state_subject": state_description}
+            {
+                "subject": subject.name,
+                "state_subject": state_description,
+                "year": subject.year,
+            }
         )
 
     return list(career_progress.values())

@@ -28,17 +28,13 @@ export default function Start({ navigation }) {
   }
 
   return (
-    <View className="flex-1 justify-center items-center p-4 bg-gray-100">
-      <Text className="text-2xl font-bold mb-6 text-gray-800">
-        Welcome to Daikamoku!
-      </Text>
-
+    <View className="flex-1 flex-col bg-black">
       {progress ? (
         <ProgressDisplay progress={progress} />
       ) : (
         <>
           <Text className="text-lg text-gray-800">
-            You have no progress yet.
+            Tu no tienes un seguimiento de progreso aún.
           </Text>
           <FacultyAndCareerList />
         </>

@@ -1,37 +1,14 @@
 import React from "react";
-import { View, Text, FlatList, TouchableOpacity } from "react-native";
+import { View, Text } from "react-native";
+import StateStyle from "./stateStyle";
+import YearStyle from "./yearStyle";
 
-// Componente optimizado con React.memo
-const SubjectItem = React.memo(function SubjectItem({
-  item,
-  stateSubjects,
-  handleProgressSelect,
-  selectedSubjects,
-}) {
+export default function SubjectItem({ subject }) {
   return (
-    <View className="p-4 my-2 bg-green-600 rounded-lg">
-      <Text className="text-lg font-bold text-white">{item.name}</Text>
-      <FlatList
-        data={stateSubjects}
-        horizontal
-        renderItem={({ item: state }) => (
-          <TouchableOpacity
-            onPress={() => handleProgressSelect(item.id, state.id)}
-            style={{
-              backgroundColor:
-                selectedSubjects[item.id] === state.id ? "blue" : "gray",
-              padding: 10,
-              borderRadius: 5,
-              marginHorizontal: 5,
-            }}
-          >
-            <Text style={{ color: "white" }}>{state.description}</Text>
-          </TouchableOpacity>
-        )}
-        keyExtractor={(state) => state.id.toString()}
-      />
+    <View className="m-4 p-2 border rounded bg-white">
+      <YearStyle year={subject.year} />
+      <Text className="text-gray-800 font-semibold">{`Materia: ${subject.subject}`}</Text>
+      <StateStyle state={subject.state_subject} />
     </View>
   );
-});
-
-export default SubjectItem;
+}

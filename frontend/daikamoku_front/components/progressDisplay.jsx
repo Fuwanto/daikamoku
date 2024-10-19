@@ -22,7 +22,7 @@ const ProgressDisplay = ({ progress }) => {
             <Text className="text-2xl font-bold text-white text-center pb-4">
               Progreso
             </Text>
-            <ProgressCircle percentage={23} />
+            <ProgressCircle percentage={item.percentage} />
 
             <FlatList
               data={item.subjects.sort((a, b) => a.year - b.year)}

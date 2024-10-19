@@ -67,12 +67,17 @@ class CareerProgressSerializer(serializers.ModelSerializer):
 class showCareerProgressSerializer(serializers.Serializer):
     career = serializers.CharField()
     subjects = serializers.ListField(child=serializers.DictField())
+    percentage = serializers.FloatField()
 
     def validate(self, data):
         if not data.get("career"):
             raise serializers.ValidationError({"career": "Career cannot be empty."})
         if not data.get("subjects"):
             raise serializers.ValidationError({"subjects": "Subjects cannot be empty."})
+        if not data.get("percentage"):
+            raise serializers.ValidationError(
+                {"percentage": "Percentage cannot be empty."}
+            )
         return data
 
 

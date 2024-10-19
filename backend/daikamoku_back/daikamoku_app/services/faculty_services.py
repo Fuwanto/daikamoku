@@ -30,6 +30,17 @@ def get_faculty_careers(faculty_id):
     return Career.objects.filter(id__in=carrers_id)
 
 
+def get_carrer_progress_percentage(subjects):
+    total_subjects = len(subjects)
+    approved_subjects = 0
+
+    for subject in subjects:
+        if subject["state_subject"] == "Aprobada":
+            approved_subjects += 1
+
+    return "{:.2f}".format((approved_subjects / total_subjects) * 100)
+
+
 def get_career_progress(user_id):
     progress = CareerProgress.objects.filter(user__id=user_id)
     career_progress = {}
@@ -49,6 +60,9 @@ def get_career_progress(user_id):
                 "year": subject.year,
             }
         )
+
+    for p in career_progress.values():
+        p["percentage"] = get_carrer_progress_percentage(p["subjects"])
 
     return list(career_progress.values())
 

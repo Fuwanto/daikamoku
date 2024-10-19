@@ -30,7 +30,7 @@ const ProgressCircle = ({ percentage }) => {
         showsText={true}
         formatText={() => `${percentage}%`} // Texto dentro del círculo
         textStyle={{
-          fontSize: SIZE / 4,
+          fontSize: SIZE / 6,
           color: "#06327D",
           fontWeight: "bold",
         }} // Estilo del texto

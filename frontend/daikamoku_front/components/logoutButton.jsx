@@ -1,4 +1,4 @@
-import { Text, View, Alert, Pressable } from "react-native";
+import { Text, View, Alert, TouchableOpacity } from "react-native";
 import { logout_api } from "../services/authServices";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
@@ -17,10 +17,15 @@ export default function LogoutButton() {
   };
 
   return (
-    <View>
-      <Pressable onPress={handleLogout}>
-        <Text>Logout</Text>
-      </Pressable>
+    <View className="m-4">
+      <TouchableOpacity
+        onPress={handleLogout}
+        className="bg-red-600 p-3 rounded-lg shadow-md"
+      >
+        <Text className="text-white font-semibold text-center text-lg">
+          Logout
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }

@@ -8,6 +8,7 @@ from ..services.faculty_services import (
     get_career_progress,
     get_subjects_by_career,
     get_state_subjects,
+    updateStateSubject,
 )
 from ..serializers.faculty_serializers import (
     FacultySerializer,
@@ -16,6 +17,7 @@ from ..serializers.faculty_serializers import (
     StateSubjectSerializer,
     subjectSerializer,
     showCareerProgressSerializer,
+    UpdateStateSubjectSerializer,
 )
 
 
@@ -133,3 +135,37 @@ class StateSubjectView(generics.ListAPIView):
             {"state_subjects": serializer.data},
             status=status.HTTP_200_OK,
         )
+
+
+class UpdateStateSubjectView(generics.UpdateAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UpdateStateSubjectSerializer
+
+    def post(self, request, *args, **kwargs):
+        auth_header = request.headers.get("Authorization")
+        if not auth_header:
+            return Response(
+                {"success": False, "detail": "Authorization header not found."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        user = get_user_by_token(auth_header)
+        subject_id = request.data.get("subject_id")
+        state_subject_data = request.data.get("state_subject")
+        career = request.data.get("career")
+        updated = updateStateSubject(subject_id, state_subject_data, user.id, career)
+
+        if updated:
+            return Response(
+                {
+                    "success": True,
+                    "detail": "State subject updated successfully.",
+                    "new_percentage": updated,
+                },
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response(
+                {"success": False, "detail": "State subject not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )

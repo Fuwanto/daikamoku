@@ -14,6 +14,7 @@ from daikamoku_app.views.faculty_views import (
     SubjectCareerView,
     StateSubjectView,
     UpdateCareerProgressView,
+    UpdateStateSubjectView,
 )
 
 urlpatterns = [
@@ -48,4 +49,9 @@ urlpatterns = [
         name="career-subjects",
     ),
     path("state-subjects/", StateSubjectView.as_view(), name="state-subjects"),
+    path(
+        "state-subject/update/",
+        UpdateStateSubjectView.as_view(),
+        name="update-state-subject",
+    ),
 ]

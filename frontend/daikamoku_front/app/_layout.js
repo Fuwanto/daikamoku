@@ -5,6 +5,7 @@ import { AuthProvider } from "../context/AuthContext";
 import login from "./login";
 import register from "./register";
 import index from "./index";
+import Start from "./Start";
 
 const Stack = createNativeStackNavigator();
 
@@ -16,6 +17,7 @@ export default function Layout() {
           <Stack.Screen name="login" component={login} />
           <Stack.Screen name="register" component={register} />
           <Stack.Screen name="index" component={index} />
+          <Stack.Screen name="Start" component={Start} />
         </Stack.Navigator>
       </AuthProvider>
     </SafeAreaProvider>

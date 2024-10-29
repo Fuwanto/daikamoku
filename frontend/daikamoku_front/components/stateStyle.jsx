@@ -13,8 +13,8 @@ const StateStyle = ({ state }) => {
   const bgColor = colorMapping[state] || "bg-gray-700"; // Color por defecto
 
   return (
-    <View className={`mb-2 border rounded ${bgColor}`}>
-      <Text className="text-white font-semibold">{`Estado: ${state}`}</Text>
+    <View className={`flex-1 px-2 py-1 mr-2 rounded ${bgColor}`}>
+      <Text className="text-white font-semibold text-xs text-center">{`Estado: ${state}`}</Text>
     </View>
   );
 };

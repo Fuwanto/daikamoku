@@ -113,3 +113,22 @@ class StateSubjectSerializer(serializers.ModelSerializer):
         state_subject = StateSubject.objects.create(name=validated_data["name"])
         state_subject.save()
         return state_subject
+
+
+class UpdateStateSubjectSerializer(serializers.Serializer):
+    state_subject = serializers.CharField()
+    subject_id = serializers.IntegerField()
+    career = serializers.CharField()
+
+    def validate(self, data):
+        if not data.get("state_subject"):
+            raise serializers.ValidationError(
+                {"state_subject": "State subject cannot be empty."}
+            )
+        if not data.get("subject_id"):
+            raise serializers.ValidationError(
+                {"subject_id": "Subject ID cannot be empty."}
+            )
+        if not data.get("career"):
+            raise serializers.ValidationError({"career": "Career cannot be empty."})
+        return data

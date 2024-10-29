@@ -1,10 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { Text, View, FlatList } from "react-native";
 import ProgressCircle from "./progressCircle";
 import SubjectItem from "./SubjectItem";
 
 const ProgressDisplay = ({ progress }) => {
-  const careerProgress = progress.career_progress || [];
+  const [careerProgress, setCareerProgress] = useState(
+    progress.career_progress || []
+  );
+
+  // Función para actualizar el porcentaje
+  const updatePercentage = (career, newPercentage) => {
+    setCareerProgress((prev) =>
+      prev.map((item) =>
+        item.career === career ? { ...item, percentage: newPercentage } : item
+      )
+    );
+  };
 
   return (
     <View className="flex-1 flex-col bg-black">
@@ -23,12 +34,15 @@ const ProgressDisplay = ({ progress }) => {
               Progreso
             </Text>
             <ProgressCircle percentage={item.percentage} />
-
             <FlatList
               data={item.subjects.sort((a, b) => a.year - b.year)}
               keyExtractor={(subject) => subject.subject}
               renderItem={({ item: subject }) => (
-                <SubjectItem subject={subject} />
+                <SubjectItem
+                  subject={subject}
+                  career={item.career}
+                  updatePercentage={updatePercentage}
+                />
               )}
             />
           </View>

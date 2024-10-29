@@ -55,6 +55,7 @@ def get_career_progress(user_id):
 
         career_progress[career_name]["subjects"].append(
             {
+                "subject_id": subject.id,
                 "subject": subject.name,
                 "state_subject": state_description,
                 "year": subject.year,
@@ -74,3 +75,34 @@ def get_subjects_by_career(career_id):
 
 def get_state_subjects():
     return StateSubject.objects.all()
+
+
+def updateStateSubject(subject_id, state_subject_data, user_id, career):
+    career_id = Career.objects.get(name=career).id
+    state_id = StateSubject.objects.filter(
+        description=state_subject_data.capitalize()
+    ).first()
+    progress = CareerProgress.objects.filter(
+        user=user_id, career=career_id, subject=subject_id
+    ).first()
+    if progress:
+        progress.state_subject = state_id
+        progress.save()
+        return get_percentage_by_career(career_id, user_id)
+    return False
+
+
+def get_percentage_by_career(career_id, user_id):
+    subjects = get_subjects_by_career(career_id)
+    total_subjects = len(subjects)
+    approved_subjects = 0
+    for subject in subjects:
+        progress = CareerProgress.objects.filter(
+            user=user_id, career=career_id, subject=subject.id
+        ).first()
+        state_progress = StateSubject.objects.get(
+            id=progress.state_subject.id
+        ).description
+        if state_progress == "Aprobada":
+            approved_subjects += 1
+    return "{:.2f}".format((approved_subjects / total_subjects) * 100)

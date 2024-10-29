@@ -4,7 +4,6 @@ import { Picker } from "@react-native-picker/picker";
 import StateStyle from "./stateStyle";
 import YearStyle from "./yearStyle";
 import { updateStateSubject } from "../services/facultyServices";
-import { Colors } from "react-native/Libraries/NewAppScreen";
 
 export default function SubjectItem({ subject, career, updatePercentage }) {
   const [selectedState, setSelectedState] = useState(subject.state_subject);

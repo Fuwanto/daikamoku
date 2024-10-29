@@ -1,4 +1,3 @@
-import { set } from "react-hook-form";
 import { apiService, setAuthToken, getStoredToken } from "./apiServices";
 
 export async function getFaculties() {

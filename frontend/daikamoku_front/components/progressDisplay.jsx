@@ -18,37 +18,32 @@ const ProgressDisplay = ({ progress }) => {
   };
 
   return (
-    <View className="flex-1 flex-col bg-black">
-      <FlatList
-        data={careerProgress}
-        keyExtractor={(item) => item.career}
-        renderItem={({ item }) => (
-          <View className="mb-4 border rounded bg-black shadow">
-            <Text className="text-4xl font-bold text-white text-center pt-6">
-              {item.career}
-            </Text>
-            <Text className="text-4xl font-bold text-white text-center pb-4">
-              _______________
-            </Text>
-            <Text className="text-2xl font-bold text-white text-center pb-4">
-              Progreso
-            </Text>
-            <ProgressCircle percentage={item.percentage} />
-            <FlatList
-              data={item.subjects.sort((a, b) => a.year - b.year)}
-              keyExtractor={(subject) => subject.subject}
-              renderItem={({ item: subject }) => (
-                <SubjectItem
-                  subject={subject}
-                  career={item.career}
-                  updatePercentage={updatePercentage}
-                />
-              )}
-            />
-          </View>
-        )}
-      />
-    </View>
+    <FlatList
+      className="m-2"
+      data={careerProgress}
+      keyExtractor={(item) => item.career}
+      renderItem={({ item }) => (
+        <View className="mb-6 p-4 border border-gray-700 rounded-lg bg-gray-800 shadow-md">
+          <Text className="text-3xl font-bold text-white text-center mb-2">
+            {item.career}
+          </Text>
+
+          <ProgressCircle percentage={item.percentage} />
+          <FlatList
+            data={item.subjects.sort((a, b) => a.year - b.year)}
+            keyExtractor={(subject) => subject.subject}
+            renderItem={({ item: subject }) => (
+              <SubjectItem
+                subject={subject}
+                career={item.career}
+                updatePercentage={updatePercentage}
+              />
+            )}
+          />
+        </View>
+      )}
+      contentContainerStyle={{ paddingBottom: 10 }}
+    />
   );
 };
 

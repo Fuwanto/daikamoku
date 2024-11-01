@@ -1,18 +1,15 @@
 import React, { useContext } from "react";
-import { View, ActivityIndicator } from "react-native";
+import { View } from "react-native";
 import NoLogin from "../components/noLogin";
 import { AuthContext } from "../context/AuthContext";
 import Start from "./Start";
+import LoadingIndicator from "../components/loadingIndicator";
 
 export default function Index() {
   const { authenticated } = useContext(AuthContext);
 
   if (authenticated === null) {
-    return (
-      <View className="flex-1">
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
+    return <LoadingIndicator />;
   }
 
   return (

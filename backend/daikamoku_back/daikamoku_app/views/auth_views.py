@@ -60,6 +60,7 @@ class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
+        print("gola")
         email = request.data.get("email")
         password = request.data.get("password")
         user = get_user_by_email(email)

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, ActivityIndicator } from "react-native";
+import { View } from "react-native";
 import {
   getSubjectsByCareer,
   getStateSubjects,
@@ -9,8 +9,10 @@ import { getFaculties, getFacultyCareers } from "../services/facultyServices";
 import CareerList from "./careerList";
 import FacultyList from "./facultyList";
 import SubjectProgressList from "./subjectProgressList";
+import LoadingIndicator from "./loadingIndicator";
 
-export default function FacultyAndCareerList() {
+export default function FacultyAndCareerList({ navigation }) {
+  // Recibe la prop navigation
   const [faculties, setFaculties] = useState([]);
   const [careers, setCareers] = useState([]);
   const [subjects, setSubjects] = useState([]);
@@ -69,16 +71,19 @@ export default function FacultyAndCareerList() {
     }
   };
 
+  const handleBackPress = () => {
+    if (selectedCareerId) {
+      setSelectedCareerId(null); // Volver a la selección de carreras
+      setSelectedFacultyId(null); // Volver a la selección de facultades
+    }
+  };
+
   if (loading) {
-    return (
-      <View className="flex-1 justify-center items-center bg-white">
-        <ActivityIndicator size="large" color="#007AFF" />
-      </View>
-    );
+    return <LoadingIndicator />;
   }
 
   return (
-    <View className="flex-1 bg-gray-100">
+    <View className="flex-1 bg-gray-900 rounded-lg p-4">
       {/* Listado de Facultades */}
       {!selectedFacultyId && (
         <FacultyList
@@ -98,6 +103,7 @@ export default function FacultyAndCareerList() {
           subjects={subjects}
           stateSubjects={stateSubjects}
           onSubmitProgress={handleSubmitProgress}
+          onBackPress={handleBackPress} // Pasa la función de regreso
         />
       )}
     </View>

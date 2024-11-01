@@ -23,11 +23,12 @@ export default function SubjectItem({ subject, career, updatePercentage }) {
   };
 
   return (
-    <View className="m-4 p-2 border rounded bg-white">
+    <View className="m-4 p-4 border border-custom-blue rounded-lg bg-gray-100">
       <YearStyle year={subject.year} />
-      <Text className="text-gray-800 font-semibold">{`Materia: ${subject.subject}`}</Text>
+      <Text className="text-gray-800 font-semibold text-base text-center mt-2">
+        {subject.subject}
+      </Text>
 
-      {/* Contenedor de Estado y Picker en una fila */}
       <View className="flex-row items-center justify-between mt-2">
         <StateStyle state={selectedState} />
 

@@ -5,9 +5,9 @@
 _Under development... / en desarrollo..._
 
 ![Estado 1](estado/1.gif)
-![Estado 2](estado/1.gif)
-![Estado 3](estado/1.gif)
-![Estado 4](estado/1.gif)
+![Estado 2](estado/2.gif)
+![Estado 3](estado/3.gif)
+![Estado 4](estado/4.gif)
 
 ## Créditos de Imágenes
 
